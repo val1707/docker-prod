@@ -1,6 +1,7 @@
 pipeline {
   environment {
     imagename = "val717/k8s-app"
+    registryCredential = 'docker-pass'
     dockerImage = ''
   }
   agent any
@@ -18,15 +19,15 @@ pipeline {
         }
       }
     }
-    // stage('Deploy Image') {
-    //   steps{
-    //     script {
-    //       docker.withRegistry( '', registryCredential ) {
-    //         dockerImage.push("$BUILD_NUMBER")
-    //          dockerImage.push('latest')
-    //       }
-    //     }
-    //   }
-    // }
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push("$BUILD_NUMBER")
+             dockerImage.push('latest')
+          }
+        }
+      }
+    }
   }
 }
