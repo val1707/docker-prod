@@ -12,7 +12,7 @@ spec:
         value: ""
 ''') {
     node(POD_LABEL) {
-        git branch: 'main', credentialsId: 'jenkins-pet', url: 'https://github.com/val1707/web-app.git'
+        git branch: 'main', credentialsId: 'jenkins-pet', url: 'https://github.com/val1707/docker-prod.git'
         container('docker') {
             sh 'docker build -t val717/k8s-app:1.0 .'
         }
