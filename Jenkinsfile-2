@@ -15,7 +15,7 @@ spec:
         git branch: 'main', credentialsId: 'jenkins-pet', url: 'https://github.com/val1707/docker-prod.git'
         container('docker') {
             sh 'docker build -t val717/k8s-app:1.0 .'
-            withDockerRegistry(credentialsId: 'docker-pass', url: 'https://hub.docker.com/r/val717/k8s-app')
+            withDockerRegistry(credentialsId: 'docker-pass', url: 'https://hub.docker.com/r/val717/k8s-app'){
               def customImage = docker.build("val717/k8s-app:1.0")
         /* Push the container to the custom Registry */
         customImage.push()
