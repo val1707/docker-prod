@@ -9,13 +9,13 @@ pipeline {
     stage('Cloning Git') {
       steps {
         git branch: 'main', credentialsId: 'jenkins-pat', url: 'https://github.com/val1707/web-app.git'
-       }
+ 
       }
     }
     stage('Building docker image') {
       steps{
         script {
-            sh 'docker build -t'
+            sh 'docker build -t val717/k8s-app .'
         }
       }
     }
@@ -30,4 +30,5 @@ pipeline {
     //   }
     // }
   }
+}
 
