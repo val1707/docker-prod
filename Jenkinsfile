@@ -1,14 +1,14 @@
 pipeline {
-  environment {
-    imagename = "val717/k8s-app"
+  // environment {
+  //   imagename = "val717/k8s-app"
     // registryCredential = 'docker-pass'
-    dockerImage = ''
+    // dockerImage = ''
   }
   agent any
   stages {
     stage('Cloning Git') {
       steps {
-        git branch: 'main', credentialsId: 'jenkins-pet', url: 'https://github.com/val1707/web-app.git'
+        git branch: 'main', credentialsId: 'jenkins-pat', url: 'https://github.com/val1707/web-app.git'
  
       }
     }
