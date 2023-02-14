@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
-        git branch: 'main', credentialsId: 'jenkins-pet', url: 'https://github.com/val1707/web-app.git'
+        git branch: 'main', credentialsId: 'jenkins-pat', url: 'https://github.com/val1707/web-app.git'
        }
       }
     }
@@ -30,3 +30,4 @@ pipeline {
     //   }
     // }
   }
+ 
