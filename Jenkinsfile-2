@@ -15,7 +15,7 @@ spec:
         git branch: 'main', credentialsId: 'jenkins-pet', url: 'https://github.com/val1707/docker-prod.git'
         container('docker') {
             sh 'docker build -t val717/k8s-app:1.0 .'
-            withDockerRegistry(credentialsId: 'docker-pass', url: 'https://hub.docker.com/repository/docker/val717/k8s-app/') {
+            withDockerRegistry(credentialsId: 'docker-pass'){
     // some block
       }
     }
