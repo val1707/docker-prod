@@ -19,4 +19,5 @@ spec:
               sh 'docker push val717/k8s-app:1.0'
     }               
   }
+ }
 }
