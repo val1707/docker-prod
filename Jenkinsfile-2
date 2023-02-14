@@ -12,9 +12,9 @@ spec:
         value: ""
 ''') {
     node(POD_LABEL) {
-        git 'https://github.com/nginxinc/docker-nginx.git'
+        git branch: 'main', credentialsId: 'jenkins-pat', url: 'https://github.com/val1707/web-app.git'
         container('docker') {
-            sh 'docker version && cd stable/alpine/ && docker build -t nginx-example .'
+            sh 'docker build -t val717/k8s-app:1.0 .'
         }
     }
 }
