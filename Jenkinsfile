@@ -15,7 +15,7 @@ pipeline {
     stage('Building docker image') {
       steps{
         script {
-            sh 'docker build -t val717/k8s-app .'
+          dockerImage = docker.build imagename
         }
       }
     }
