@@ -14,10 +14,11 @@ spec:
     node(POD_LABEL) {
         git branch: 'main', credentialsId: 'jenkins-pet', url: 'https://github.com/val1707/docker-prod.git'
         container('docker') {
-            sh 'docker build -t val717/k8s-app .'
+            sh 'docker build -t val717/k8s-app:1.0 .'
             withDockerRegistry(credentialsId: 'docker-pass'){
-              dockerImage.push("$BUILD_NUMBER")
-              dockerImage.push('latest')
+              def customImage = docker.build("val717/k8s-app:1.0")
+        /* Push the container to the custom Registry */
+        customImage.push()
       }
     }
   }
