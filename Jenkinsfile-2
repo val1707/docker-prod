@@ -16,8 +16,7 @@ spec:
         container('docker') {
             sh 'docker build -t val717/k8s-app:1.0 .'
             withDockerRegistry(credentialsId: 'docker-pass'){
-            dockerImage.push()
-      }
-    }
+              sh 'docker push val717/k8s-app:1.0'
+    }               
   }
 }
