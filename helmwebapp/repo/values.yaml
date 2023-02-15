@@ -1,9 +1,0 @@
-k8s-app:
-  build:
-    enabled: false
-  deploy:
-    route:
-      enabled: false
-    replicas: 2
-  image:
-    name: val717/k8s-app:1.0
