@@ -17,6 +17,6 @@ spec:
         app: k8s-app
     spec:
       containers:
-      - image: val717/k8sphp:latest
+      - image: val717/k8s-app:67
         name: k8s-app
         resources: {}
