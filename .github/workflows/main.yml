@@ -1,0 +1,94 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: ssv-build-test
+spec:
+  entrypoint: dag-template
+  volumeClaimTemplates:
+    - metadata:
+        name: repo-root
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+  arguments:
+    parameters:
+    - name: repoPath
+      value: https://github.com/bloxapp/ssv.git
+    - name: dockerfilePath
+      value: ./Dockerfile
+    - name: repoDirectory
+      value: ssv
+    - name: branch
+      value: stage
+  templates:
+  - name: dag-template
+    inputs:
+      parameters:
+      - name: repoPath
+      - name: dockerfilePath
+      - name: repoDirectory
+      - name: branch
+    dag:
+      tasks:
+      - name: git-clone
+        arguments:
+          parameters:
+            - name: repoPath
+              value: "{{inputs.parameters.repoPath}}"
+            - name: branch
+              value: "{{inputs.parameters.branch}}"
+            - name: repoDirectory
+              value: "{{inputs.parameters.repoDirectory}}"
+        template: git-clone-template
+      - name: build-docker-image
+        dependencies: [git-clone]
+        arguments:
+          parameters: [{name: repoDirectory, value: "{{inputs.parameters.repoDirectory}}" } ]
+        template: build-docker-image-template
+  - name: git-clone-template
+    inputs:
+      parameters:
+      - name: repoPath
+      - name: repoDirectory
+      - name: branch
+    container:
+      image: golang:1.20.7
+      command: [sh, -c]
+      #args: ["git clone {{inputs.parameters.repoPath}} && cd {{inputs.parameters.repoDirectory}} && git status && ls -la"]
+      args: ["git clone -b {{inputs.parameters.branch}} {{inputs.parameters.repoPath}} && cd {{inputs.parameters.repoDirectory}} && git status && ls -la"]
+      workingDir: /workdir
+      volumeMounts:
+        - name: repo-root
+          mountPath: /workdir
+  - name: build-docker-image-template
+    inputs:
+      parameters:
+      - name: repoDirectory
+    container:
+      image: gcr.io/kaniko-project/executor:latest
+      imagePullPolicy: Always
+      command: ["/kaniko/executor"]
+      args:
+        [
+          "--dockerfile=/workdir/ssv/Dockerfile",
+          "--context=/workdir/{{inputs.parameters.repoDirectory}}",
+          "--destination=121827225315.dkr.ecr.us-west-2.amazonaws.com/ssv-node-test:latest",
+          "--cache=false",
+          "--verbosity=debug"
+        ]
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret-ecr
+              key: aws_access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret-ecr
+              key: aws_secret_access_key
+      volumeMounts:
+        - name: repo-root
+          mountPath: /workdir
