@@ -6,7 +6,7 @@ metadata:
   name: k8s-app
   namespace: webapp
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: k8s-app
