@@ -1,13 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  name: ssv-build-test
+  name: build-docker-test
 spec:
   entrypoint: dag-template
   volumeClaimTemplates:
     - metadata:
         name: repo-root
       spec:
+        storageClassName: localdisk
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
@@ -15,13 +16,13 @@ spec:
   arguments:
     parameters:
     - name: repoPath
-      value: https://github.com/bloxapp/ssv.git
+      value: github.com/val1707/docker-prod.git
     - name: dockerfilePath
       value: ./Dockerfile
     - name: repoDirectory
-      value: ssv
+      value: docker-prod
     - name: branch
-      value: stage
+      value: main
   templates:
   - name: dag-template
     inputs:
@@ -55,9 +56,16 @@ spec:
       - name: branch
     container:
       image: golang:1.20.7
+      env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-token
+              key: token            
       command: [sh, -c]
       #args: ["git clone {{inputs.parameters.repoPath}} && cd {{inputs.parameters.repoDirectory}} && git status && ls -la"]
-      args: ["git clone -b {{inputs.parameters.branch}} {{inputs.parameters.repoPath}} && cd {{inputs.parameters.repoDirectory}} && git status && ls -la"]
+      # args: ["git clone -b {{inputs.parameters.branch}} {{inputs.parameters.repoPath}} && cd {{inputs.parameters.repoDirectory}} && git status && ls -la"]
+      args: ["rm -rf {{inputs.parameters.repoDirectory}} || true && git clone https://$GITHUB_TOKEN@{{inputs.parameters.repoPath}} && cd {{inputs.parameters.repoDirectory}} && git status && ls -la"]
       workingDir: /workdir
       volumeMounts:
         - name: repo-root
@@ -72,9 +80,9 @@ spec:
       command: ["/kaniko/executor"]
       args:
         [
-          "--dockerfile=/workdir/ssv/Dockerfile",
+          "--dockerfile=/workdir/docker-prod/Dockerfile",
           "--context=/workdir/{{inputs.parameters.repoDirectory}}",
-          "--destination=121827225315.dkr.ecr.us-west-2.amazonaws.com/ssv-node-test:latest",
+          "--destination=341253804405.dkr.ecr.eu-central-1.amazonaws.com/blox:latest",
           "--cache=false",
           "--verbosity=debug"
         ]
