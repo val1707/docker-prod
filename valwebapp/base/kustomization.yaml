@@ -7,3 +7,4 @@ resources:
 - k8s-app-deployment.yaml
 - k8s-app-ns.yaml
 - k8s-app-svc.yaml
+- k8s-app-ingress.yaml
