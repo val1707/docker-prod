@@ -20,3 +20,5 @@ spec:
       - image: 341253804405.dkr.ecr.eu-central-1.amazonaws.com/blox:latest
         name: k8s-app
         resources: {}
+      imagePullSecrets:
+      - name: ecr-secret
