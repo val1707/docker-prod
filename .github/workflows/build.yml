@@ -1,6 +1,8 @@
 name: Push the Docker image to AWS ECR Repo
-on: 
-  workflow_dispatch:      
+on:
+  push:
+    branches:
+      - main
 jobs:
   Build:
     name: Build
