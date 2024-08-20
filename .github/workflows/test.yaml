@@ -7,6 +7,8 @@ jobs:
   build:
     name: Build Docker Image
     runs-on: ubuntu-latest  
+    outputs:
+      image-tag: ${{ steps.get-commit-hash.outputs.commit-hash }}
     steps:  
         - name: Checkout
           uses: actions/checkout@v2    
@@ -51,11 +53,7 @@ jobs:
 
         - name: Login to Amazon ECR
           id: login-ecr
-          uses: aws-actions/amazon-ecr-login@v1
-        
-        - name: Get commit hash
-          id: get-commit-hash
-          run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"         
+          uses: aws-actions/amazon-ecr-login@v1    
 
         - name: executing remote ssh commands using password
           uses: appleboy/ssh-action@master
@@ -65,9 +63,10 @@ jobs:
             AWS_REGION: ${{ secrets.AWS_REGION }}
             ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
             ECR_REPOSITORY: ${{secrets.AWS_ECR_REPO}}
-            IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}
+            IMAGE_TAG: ${{ needs.build.outputs.image-tag }}
           with:
             script: |
+              set -e
               aws configure set aws_access_key_id > echo $AWS_ACCESS_KEY_ID
               aws configure set aws_secret_access_key > echo $AWS_SECRET_ACCESS_KEY
               aws configure set default.region > echo $AWS_REGION
